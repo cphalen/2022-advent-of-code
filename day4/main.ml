@@ -3,12 +3,10 @@ open Core
 let read_input file = In_channel.read_lines file
 
 module Range = struct
-  type t = { low : int; high : int}
+  type t = { low : int; high : int }
 
   let create ~low ~high () = { low; high }
-
   let contains self other = self.low <= other.low && other.high <= self.high
-
   let overlap self other = self.high < other.low || other.high < self.low
 end
 
@@ -28,28 +26,28 @@ let parse_line line =
   | _ -> None
 
 let pairwise_contains (left, right) =
-   Range.contains left right || Range.contains right left
+  Range.contains left right || Range.contains right left
 
 module V1 = struct
   let _main () =
     read_input "day4/input.txt"
-      |> List.map ~f:parse_line
-      |> List.filter_map ~f:Fn.id
-      |> List.filter ~f:pairwise_contains
-      |> List.length
-      |> Int.to_string
-      |> print_endline
+    |> List.map ~f:parse_line
+    |> List.filter_map ~f:Fn.id
+    |> List.filter ~f:pairwise_contains
+    |> List.length
+    |> Int.to_string
+    |> print_endline
 end
 
 module V2 = struct
   let main () =
     read_input "day4/input.txt"
-      |> List.map ~f:parse_line
-      |> List.filter_map ~f:Fn.id
-      |> List.filter ~f:(fun (left, right) -> Range.overlap left right |> not)
-      |> List.length
-      |> Int.to_string
-      |> print_endline
+    |> List.map ~f:parse_line
+    |> List.filter_map ~f:Fn.id
+    |> List.filter ~f:(fun (left, right) -> Range.overlap left right |> not)
+    |> List.length
+    |> Int.to_string
+    |> print_endline
 end
 
 module Current = V2
