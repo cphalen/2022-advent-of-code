@@ -16,7 +16,6 @@ module Monkey = struct
   module V2 = struct
     (* product of all divisibility tests *)
     let modulo = 9699690
-
     let worry_level t ~item = t.operation item |> Fn.flip ( % ) modulo
   end
 

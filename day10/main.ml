@@ -32,7 +32,10 @@ module Cycle_map = struct
 
   let size t = t.index - 1
 
-  let _to_string t = Map.to_alist t.map |> List.map ~f:(fun (key, data) -> Printf.sprintf ("%i -> %i") key data) |> String.concat ~sep:"\n"
+  let _to_string t =
+    Map.to_alist t.map
+    |> List.map ~f:(fun (key, data) -> Printf.sprintf "%i -> %i" key data)
+    |> String.concat ~sep:"\n"
 end
 
 let lines = In_channel.read_lines "day10/input.txt"
@@ -42,43 +45,43 @@ let init_cycle_map () =
     List.map lines ~f:(fun line -> Instruction.create line)
     |> List.filter_map ~f:Fn.id
   in
-    List.fold ins_list ~init:Cycle_map.empty ~f:(fun cycle_map ins ->
-        let x = Cycle_map.get cycle_map in
-        match ins with
-        | Noop -> Cycle_map.push cycle_map x
-        | Addx imm ->
-            let cycle_map = Cycle_map.push cycle_map x in
-            let cycle_map = Cycle_map.push cycle_map (x + imm) in
-            cycle_map)
+  List.fold ins_list ~init:Cycle_map.empty ~f:(fun cycle_map ins ->
+      let x = Cycle_map.get cycle_map in
+      match ins with
+      | Noop -> Cycle_map.push cycle_map x
+      | Addx imm ->
+          let cycle_map = Cycle_map.push cycle_map x in
+          let cycle_map = Cycle_map.push cycle_map (x + imm) in
+          cycle_map)
 
 module V1 = struct
-let _main () =
-  let cycle_map = init_cycle_map () in
-  Cycle_map.size cycle_map
-  |> List.init ~f:Fn.id
-  |> List.filter ~f:(fun cycle -> cycle >= 20 && (cycle - 20) mod 40 = 0)
-  |> List.map ~f:(fun cycle -> cycle * Cycle_map.get ~index:cycle cycle_map)
-  |> List.sum (module Int) ~f:Fn.id
-  |> Int.to_string
-  |> print_endline
+  let _main () =
+    let cycle_map = init_cycle_map () in
+    Cycle_map.size cycle_map
+    |> List.init ~f:Fn.id
+    |> List.filter ~f:(fun cycle -> cycle >= 20 && (cycle - 20) mod 40 = 0)
+    |> List.map ~f:(fun cycle -> cycle * Cycle_map.get ~index:cycle cycle_map)
+    |> List.sum (module Int) ~f:Fn.id
+    |> Int.to_string
+    |> print_endline
 end
 
 module V2 = struct
-let print_pixel ~cycle_map cycle =
-  let x = Cycle_map.get cycle_map ~index:cycle in
-  let index = cycle - 1 in
-  let pixel = match abs (x - (index mod 40)) with
-    | -1 | 0 | 1 -> "#"
-    | _ -> "."
-  in
-  print_string pixel; if index mod 40 = 39 then print_string "\n"
+  let print_pixel ~cycle_map cycle =
+    let x = Cycle_map.get cycle_map ~index:cycle in
+    let index = cycle - 1 in
+    let pixel =
+      match abs (x - (index mod 40)) with -1 | 0 | 1 -> "#" | _ -> "."
+    in
+    print_string pixel;
+    if index mod 40 = 39 then print_string "\n"
 
-let main () =
-  let cycle_map = init_cycle_map () in
-  Cycle_map.size cycle_map
-  |> List.init ~f:Fn.id
-  |> Fn.flip List.drop 1
-  |> List.iter ~f:(print_pixel ~cycle_map)
+  let main () =
+    let cycle_map = init_cycle_map () in
+    Cycle_map.size cycle_map
+    |> List.init ~f:Fn.id
+    |> Fn.flip List.drop 1
+    |> List.iter ~f:(print_pixel ~cycle_map)
 end
 
 module Current = V2
